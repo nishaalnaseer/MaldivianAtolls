@@ -1,11 +1,14 @@
 import json
-import time
 import requests
 import bs4
 import asyncio
 
 
+# script to scrape https://www.atollsofmaldives.gov.mv
+
+
 async def get_atolls(root_url: str) -> dict:
+    """get names and initial details of atolls"""
     root_raw: requests.api = requests.get(f"{root_url}/atolls")
 
     root_soup: bs4.BeautifulSoup = bs4.BeautifulSoup(root_raw.content.decode(), "html.parser")
@@ -42,6 +45,7 @@ async def get_atolls(root_url: str) -> dict:
 
 
 async def update_atolls(atolls: dict, root_url: str) -> dict:
+    """get each atolls page, scrape and update the dict"""
     for name in atolls:
         atoll = atolls[name]
         link = atoll["absolute_link"]
@@ -80,6 +84,7 @@ async def update_atolls(atolls: dict, root_url: str) -> dict:
 
 
 async def scrape_island(island: dict) -> dict:
+    """get each island in the island list and scrape, update dict"""
     link = island["Island Link"]
     island_raw: requests.api = requests.get(link)
 
@@ -135,7 +140,7 @@ async def scrape_island(island: dict) -> dict:
 
 
 async def main() -> None:
-    root_url = "https://www.atollsofmaldives.gov.mv"
+    root_url = ""
     atolls: dict = await get_atolls(root_url)
     atolls: dict = await update_atolls(atolls, root_url)
 
